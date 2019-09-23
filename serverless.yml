@@ -3,6 +3,7 @@ service: sls-notes-backend
 
 plugins:
   - serverless-offline
+  - serverless-plugin-warmup
 
 custom:
   allowedHeaders:
@@ -12,6 +13,14 @@ custom:
     - Authorization
     - app_user_id
     - app_user_name
+  # Plugin Configuration
+  warmup:
+    enabled: true
+    memorySize: 128
+    name: ${self:service}-${opt:stage}-warmup
+    events:
+      - schedule: 'cron(0/5 8-17 ? * MON-FRI *)'
+    timeout: 60
 
 
 provider:
@@ -25,7 +34,11 @@ provider:
   environment:
     NOTES_TABLE: ${self:service}-${opt:stage, self:provider.stage}
     DEPLOY_REGION:  ${opt:region, self:provider.region}
-  iamRoleStatements:
+  iamRoleStatements:   #${file(./iamRoleStatements.yml)}
+    - Effect: Allow
+      Action:
+        - lambda:InvokeFunction
+      Resource: "*"
     - Effect: Allow
       Action:
         - dynamodb:Query
@@ -36,10 +49,12 @@ provider:
       Action:
         - dynamodb:Query
       Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.NOTES_TABLE}/index/*"
-functions:
+functions:     #${file(./functions.yml)}
   add-note:
     handler: api/add-note.handler
     description: POST /note
+    warmup:
+      enabled: false
     events:
       - http:
           path: note
@@ -51,6 +66,8 @@ functions:
   update-note:
     handler: api/update-note.handler
     description: PATCH /note
+    warmup:
+      enabled: false
     events:
       - http:
           path: note
@@ -62,6 +79,8 @@ functions:
   get-notes:
     handler: api/get-notes.handler
     description: GET /notes
+    warmup:
+      enabled: true
     events:
       - http:
           path: notes
@@ -73,6 +92,8 @@ functions:
   get-note:
     handler: api/get-note.handler
     description: GET /note/n/{note_id}
+    warmup:
+      enabled: true
     events:
       - http:
           path: note/n/{note_id}
@@ -84,6 +105,8 @@ functions:
   delete-note:
     handler: api/delete-note.handler
     description: DELETE /note
+    warmup:
+      enabled: false
     events:
       - http:
           path: note/t/{timestamp}
@@ -92,7 +115,7 @@ functions:
             origin: '*'
             headers: ${self:custom.allowedHeaders}
 
-resources:
+resources: #${file(./resources.yml)}
   Resources:
     NotesTable:
       Type: AWS::DynamoDB::Table
