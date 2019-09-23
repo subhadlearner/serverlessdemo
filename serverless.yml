@@ -2,7 +2,7 @@
 service: sls-notes-backend
 
 plugins:
-  - serverless-offline  
+  - serverless-offline
 
 custom:
   allowedHeaders:
@@ -12,7 +12,7 @@ custom:
     - Authorization
     - app_user_id
     - app_user_name
-  
+
 
 provider:
   name: aws
@@ -24,9 +24,10 @@ provider:
   endpointType: regional
   environment:
     NOTES_TABLE: ${self:service}-${opt:stage, self:provider.stage}
+    DEPLOY_REGION:  ${opt:region, self:provider.region}
   iamRoleStatements:
     - Effect: Allow
-      Action: 
+      Action:
         - dynamodb:Query
         - dynamodb:PutItem
         - dynamodb:DeleteItem
@@ -123,4 +124,4 @@ resources:
             ProvisionedThroughput:
               ReadCapacityUnits: 1
               WriteCapacityUnits: 1
-            
+
