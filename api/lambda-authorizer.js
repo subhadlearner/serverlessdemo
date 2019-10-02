@@ -344,7 +344,7 @@ exports.handler = (event, context, callback) => {
     // the example policy below denies access to all resources in the RestApi
     const policy = new AuthPolicy(principalId, awsAccountId, apiOptions);
     
-    if(decoded.sub == "user1") {
+    if(decoded.sub == "note_app_user") {
         policy.allowAllMethods();
     } else {
         policy.denyAllMethods();
@@ -354,8 +354,8 @@ exports.handler = (event, context, callback) => {
 
     authResponse.context = {
         sub: decoded.sub,
-        name: decoded.name,
-        data: decoded.data       
+        app_user_id: decoded.app_user_id,
+        app_user_name: decoded.app_user_name 
     };
     callback(null, authResponse);
 };
