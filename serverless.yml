@@ -50,6 +50,9 @@ provider:
         - dynamodb:Query
       Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.NOTES_TABLE}/index/*"
 functions:     #${file(./functions.yml)}
+  authorizer:
+    handler: api/lambda-authorizer.handler
+    description: Authenticate user via JWT token
   add-note:
     handler: api/add-note.handler
     description: POST /note
@@ -59,6 +62,7 @@ functions:     #${file(./functions.yml)}
       - http:
           path: note
           method: post
+          authorizer: authorizer
           cors:
             origin: '*'
             headers: ${self:custom.allowedHeaders}
@@ -72,6 +76,7 @@ functions:     #${file(./functions.yml)}
       - http:
           path: note
           method: patch
+          authorizer: authorizer
           cors:
             origin: '*'
             headers: ${self:custom.allowedHeaders}
@@ -85,6 +90,7 @@ functions:     #${file(./functions.yml)}
       - http:
           path: notes
           method: get
+          authorizer: authorizer
           cors:
             origin: '*'
             headers: ${self:custom.allowedHeaders}
@@ -98,6 +104,7 @@ functions:     #${file(./functions.yml)}
       - http:
           path: note/n/{note_id}
           method: get
+          authorizer: authorizer
           cors:
             origin: '*'
             headers: ${self:custom.allowedHeaders}
@@ -111,6 +118,7 @@ functions:     #${file(./functions.yml)}
       - http:
           path: note/t/{timestamp}
           method: delete
+          authorizer: authorizer
           cors:
             origin: '*'
             headers: ${self:custom.allowedHeaders}

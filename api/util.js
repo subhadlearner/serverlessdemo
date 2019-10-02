@@ -4,12 +4,14 @@ const getResponseHeaders = () => {
     }
 }
 
-const getUserId = (headers)=>{
-    return headers.app_user_id;
+const getUserId = (event)=>{ //pass headers in case passing user info via header
+    //return headers.app_user_id;    
+    return event.requestContext.authorizer.app_user_id;
 }
 
-const getUserName = (headers)=>{
-    return headers.app_user_name;
+const getUserName = (event)=>{
+    //return headers.app_user_name;    
+    return event.requestContext.authorizer.app_user_name;
 }
 
 module.exports = {

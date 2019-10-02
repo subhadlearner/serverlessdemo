@@ -14,8 +14,8 @@ const tableName = process.env.NOTES_TABLE;
 exports.handler = async (event) =>{
     try{
         let item = JSON.parse(event.body).Item;
-        item.user_id = util.getUserId(event.headers);
-        item.user_name = util.getUserName(event.headers);
+        item.user_id = util.getUserId(event);//util.getUserId(event.headers);
+        item.user_name = util.getUserName(event);//util.getUserName(event.headers);
         item.expires = moment().add(90,'days').unix();
 
         let data = await dynamodb.put({

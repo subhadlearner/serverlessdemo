@@ -15,8 +15,8 @@ const tableName = process.env.NOTES_TABLE;
 exports.handler = async (event) =>{
     try{
         let item = JSON.parse(event.body).Item;
-        item.user_id = util.getUserId(event.headers);
-        item.user_name = util.getUserName(event.headers);
+        item.user_id = util.getUserId(event)//util.getUserId(event.headers);
+        item.user_name = util.getUserName(event);//util.getUserName(event.headers);
         item.note_id = item.user_id + ':' + uuidV4();
         item.timestamp = moment().unix();
         item.expires = moment().add(90,'days').unix();

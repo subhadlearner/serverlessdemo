@@ -16,7 +16,7 @@ exports.handler = async (event) => {
         let params = {
             TableName: tableName,
             Key: {
-                user_id: util.getUserId(event.headers),
+                user_id: util.getUserId(event),//util.getUserId(event.headers),
                 timestamp: timestamp
             }
         };
